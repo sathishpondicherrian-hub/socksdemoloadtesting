@@ -6,7 +6,8 @@ pipeline {
 
         stage('Checkout') {
             steps {
-                git 'https://github.com/sathishpondicherrian-hub/socksdemoloadtesting.git'
+                git branch: 'main',
+    url: 'https://github.com/sathishpondicherrian-hub/socksdemoloadtesting.git'
             }
         }
 
