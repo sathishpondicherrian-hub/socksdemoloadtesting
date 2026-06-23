@@ -20,8 +20,8 @@ pipeline {
 
         stage('Push Image') {
             steps {
-                withDockerRegistry([credentialsId: 'dockerhub-creds']) {
-                    sh 'docker push sathishkumarsdocker/jmeter:1.0'
+               withDockerRegistry(credentialsId: 'dockerhub-creds', url: 'https://index.docker.io/v1/') {
+    sh 'docker push sathishkumarsdocker/jmeter:1.0'
                 }
             }
         }
