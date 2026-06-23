@@ -31,20 +31,29 @@ pipeline {
                 }
             }
         }
+stage('Run JMeter Test') {
+    steps {
+        sh '''
+        mkdir -p reports
 
-        stage('Run JMeter Test') {
-            steps {
-                sh '''
-                mkdir -p reports
+        docker run --rm \
+        -v $(pwd)/reports:/test/reports \
+        ${IMAGE_NAME}:${IMAGE_TAG} \
+        -n -t /test/socksproject.jmx \
+        -l /test/reports/results.jtl
 
-                docker run --rm \
-                -v $WORKSPACE/reports:/test/reports \
-                ${IMAGE_NAME}:${IMAGE_TAG} \
-                -n -t /test/socksproject.jmx \
-                -l /test/reports/results.jtl
-                '''
-            }
-        }
+        echo "===== Workspace ====="
+        pwd
+
+        echo "===== Reports folder ====="
+        ls -la reports
+
+        echo "===== Search results.jtl ====="
+        find . -name "*.jtl"
+        '''
+    }
+}
+    
 
         stage('Archive Results') {
             steps {
