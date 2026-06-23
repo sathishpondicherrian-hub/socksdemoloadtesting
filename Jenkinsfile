@@ -11,17 +11,7 @@ pipeline {
         stage('Checkout') {
             steps {
                 git branch: 'main',
-                    url: 'https://github.com/sathishpondicherrian-hub/socksdemoloadtesting.git'
-            }
-        }
-
-        stage('Validate Files') {
-            steps {
-                sh '''
-                ls -l
-                test -f Dockerfile
-                test -f socksproject.jmx
-                '''
+                url: 'https://github.com/sathishpondicherrian-hub/socksdemoloadtesting.git'
             }
         }
 
@@ -48,10 +38,9 @@ pipeline {
                 mkdir -p reports
 
                 docker run --rm \
-                -v $PWD/reports:/test/reports \
+                -v $WORKSPACE/reports:/test/reports \
                 ${IMAGE_NAME}:${IMAGE_TAG} \
-                -n \
-                -t /test/socksproject.jmx \
+                -n -t /test/socksproject.jmx \
                 -l /test/reports/results.jtl
                 '''
             }
@@ -62,20 +51,21 @@ pipeline {
                 archiveArtifacts artifacts: 'reports/**', fingerprint: true
             }
         }
+
+        stage('Clean Docker Images') {
+            steps {
+                sh 'docker image prune -f'
+            }
+        }
     }
 
     post {
-
         success {
             echo 'Pipeline completed successfully'
         }
 
         failure {
             echo 'Pipeline failed'
-        }
-
-        always {
-            sh 'docker image prune -f || true'
         }
     }
 }
