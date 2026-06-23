@@ -43,7 +43,23 @@ stage('Run JMeter Test') {
     }
 }
     
+stage('Copy Results') {
+    steps {
+        sh '''
+        mkdir -p reports
 
+        docker run --rm \
+        -v jmeter-results:/from \
+        -v $(pwd)/reports:/to \
+        alpine cp /from/results.jtl /to/
+        '''
+    }
+}
+        stage('Archive Results') {
+    steps {
+        archiveArtifacts artifacts: 'reports/**'
+    }
+}
         stage('Archive Results') {
             steps {
                 archiveArtifacts artifacts: 'reports/**', fingerprint: true
